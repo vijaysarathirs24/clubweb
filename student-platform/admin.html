@@ -1,0 +1,137 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Platform - Admin Dashboard</title>
+  <link rel="stylesheet" href="css/tailwind.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-gray-100 text-gray-900 min-h-screen">
+  <nav class="bg-blue-600 p-4 shadow-md">
+    <div class="container mx-auto flex justify-between items-center">
+      <h1 class="text-white text-xl font-bold">Student Platform</h1>
+      <div>
+        <a href="index.html" class="text-white hover:text-blue-200 px-3">Feed</a>
+        <a href="profile.html" class="text-white hover:text-blue-200 px-3">Profile</a>
+        <a href="messages.html" class="text-white hover:text-blue-200 px-3">Messages</a>
+        <a href="settings.html" class="text-white hover:text-blue-200 px-3">Settings</a>
+        <a href="admin.html" class="text-white hover:text-blue-200 px-3">Admin</a>
+        <button id="logout-btn" class="text-white hover:text-blue-200 px-3">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mx-auto mt-6 p-4">
+    <h2 class="text-2xl font-semibold mb-4">Admin Dashboard</h2>
+    <div id="admin-content" class="space-y-6">
+      <div class="bg-white p-6 rounded-lg shadow-md">
+        <h3 class="text-xl font-semibold mb-2">Users</h3>
+        <table class="w-full border-collapse">
+          <thead>
+            <tr class="bg-gray-200">
+              <th class="border p-2">Email</th>
+              <th class="border p-2">Name</th>
+              <th class="border p-2">Status</th>
+              <th class="border p-2">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="users-table">
+            <!-- Users will be dynamically inserted here -->
+          </tbody>
+        </table>
+      </div>
+      <div class="bg-white p-6 rounded-lg shadow-md">
+        <h3 class="text-xl font-semibold mb-2">Uploads</h3>
+        <table class="w-full border-collapse">
+          <thead>
+            <tr class="bg-gray-200">
+              <th class="border p-2">User</th>
+              <th class="border p-2">File</th>
+              <th class="border p-2">Caption</th>
+              <th class="border p-2">Status</th>
+              <th class="border p-2">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="uploads-table">
+            <!-- Uploads will be dynamically inserted here -->
+          </tbody>
+        </table>
+      </div>
+      <div class="bg-white p-6 rounded-lg shadow-md">
+        <h3 class="text-xl font-semibold mb-2">Messages</h3>
+        <table class="w-full border-collapse">
+          <thead>
+            <tr class="bg-gray-200">
+              <th class="border p-2">Sender</th>
+              <th class="border p-2">Receiver</th>
+              <th class="border p-2">Content</th>
+              <th class="border p-2">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="messages-table">
+            <!-- Messages will be dynamically inserted here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/admin.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      applyTheme();
+      if (!isLoggedIn()) {
+        window.location.href = 'login.html';
+      } else if (!isAdmin()) {
+        alert('Admin access required');
+        window.location.href = 'index.html';
+      } else {
+        loadAdminData();
+      }
+      document.getElementById('logout-btn').addEventListener('click', logout);
+    });
+  </script>
+</body>
+</html>
