@@ -1,0 +1,101 @@
+/* Custom styles for the project */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+input, textarea {
+  outline: none;
+  transition: border-color 0.2s ease-in-out;
+}
+
+input:focus, textarea:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+table {
+  width: 100%;
+}
+
+th, td {
+  padding: 0.75rem;
+  text-align: left;
+}
+
+.post {
+  transition: transform 0.2s ease-in-out;
+}
+
+.post:hover {
+  transform: translateY(-5px);
+}
+
+.post img, .post video {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+}
+
+.upload-item {
+  transition: transform 0.2s ease-in-out;
+}
+
+.upload-item:hover {
+  transform: translateY(-5px);
+}
+
+.upload-item img, .upload-item video {
+  max-width: 200px;
+  height: auto;
+  border-radius: 0.5rem;
+}
+
+#chat-messages {
+  background-color: #f9fafb;
+  border-radius: 0.5rem;
+}
+
+#chat-messages .message {
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+  border-radius: 0.5rem;
+  max-width: 70%;
+}
+
+#chat-messages .message.sent {
+  background-color: #e0f2fe;
+  margin-left: auto;
+  text-align: right;
+}
+
+#chat-messages .message.received {
+  background-color: #e5e7eb;
+  margin-right: auto;
+}
+
+:root[data-theme="dark"] #chat-messages {
+  background-color: #374151;
+}
+
+:root[data-theme="dark"] #chat-messages .message.sent {
+  background-color: #60a5fa;
+}
+
+:root[data-theme="dark"] #chat-messages .message.received {
+  background-color: #4b5563;
+}
+
+button {
+  transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+}
+
+button:active {
+  transform: scale(0.95);
+}
+
+nav a, nav button {
+  font-weight: 500;
+}
